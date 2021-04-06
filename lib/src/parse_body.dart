@@ -13,14 +13,9 @@ import 'map_from_uri.dart';
 
 /// Forwards to [parseBodyFromStream].
 @deprecated
-Future<BodyParseResult> parseBody(HttpRequest request,
-    {bool storeOriginalBuffer: false}) {
+Future<BodyParseResult> parseBody(HttpRequest request, {bool storeOriginalBuffer = false}) {
   return parseBodyFromStream(
-      request,
-      request.headers.contentType != null
-          ? new MediaType.parse(request.headers.contentType.toString())
-          : null,
-      request.uri,
+      request, request.headers.contentType != null ? MediaType.parse(request.headers.contentType.toString()) : null, request.uri,
       storeOriginalBuffer: storeOriginalBuffer);
 }
 
@@ -32,16 +27,17 @@ Future<BodyParseResult> parseBody(HttpRequest request,
 /// via the *fileUploadName* parameter. :)
 ///
 /// Use [storeOriginalBuffer] to add  the original request bytes to the result.
-Future<BodyParseResult> parseBodyFromStream(
-    Stream<Uint8List> data, MediaType contentType, Uri requestUri,
-    {bool storeOriginalBuffer: false}) async {
-  var result = new _BodyParseResultImpl();
+Future<BodyParseResult> parseBodyFromStream(Stream<Uint8List> data, MediaType contentType, Uri requestUri, {bool storeOriginalBuffer = false}) async {
+  var result = _BodyParseResultImpl();
 
-  Future<Uint8List> getBytes() {
-    return data
-        .fold<BytesBuilder>(new BytesBuilder(copy: false), (a, b) => a..add(b))
-        .then((b) => b.takeBytes());
-  }
+  Future<Uint8List> getBytes() => data
+      .fold<BytesBuilder>(
+        BytesBuilder(copy: false),
+        (a, b) => a..add(b),
+      )
+      .then(
+        (b) => b.takeBytes(),
+      );
 
   Future<String> getBody() {
     if (storeOriginalBuffer) {
@@ -56,52 +52,41 @@ Future<BodyParseResult> parseBodyFromStream(
 
   try {
     if (contentType != null) {
-      if (contentType.type == 'multipart' &&
-          contentType.parameters.containsKey('boundary')) {
+      if (contentType.type == 'multipart' && contentType.parameters.containsKey('boundary')) {
         Stream<Uint8List> stream;
 
         if (storeOriginalBuffer) {
           var bytes = result.originalBuffer = await getBytes();
-          var ctrl = new StreamController<Uint8List>()
-            ..add(bytes)
-            ..close();
+          var ctrl = StreamController<Uint8List>()..add(bytes);
+          await ctrl.close();
           stream = ctrl.stream;
         } else {
           stream = data;
         }
 
-        var parts = MimeMultipartTransformer(
-            contentType.parameters['boundary']).bind(stream)
-            .map((part) =>
-                HttpMultipartFormData.parse(part, defaultEncoding: utf8));
+        var parts = MimeMultipartTransformer(contentType.parameters['boundary'])
+            .bind(stream)
+            .map((part) => HttpMultipartFormData.parse(part, defaultEncoding: utf8));
 
         await for (HttpMultipartFormData part in parts) {
-          if (part.isBinary ||
-              part.contentDisposition.parameters.containsKey("filename")) {
-            BytesBuilder builder = await part.fold(
-                new BytesBuilder(copy: false),
-                (BytesBuilder b, d) => b
-                  ..add(d is! String
-                      ? (d as List<int>)
-                      : (d as String).codeUnits));
-            var upload = new FileUploadInfo(
+          if (part.isBinary || part.contentDisposition.parameters.containsKey('filename')) {
+            var builder =
+                await part.fold(BytesBuilder(copy: false), (BytesBuilder b, d) => b..add(d is! String ? (d as List<int>) : (d as String).codeUnits));
+            var upload = FileUploadInfo(
                 mimeType: part.contentType.mimeType,
                 name: part.contentDisposition.parameters['name'],
-                filename:
-                    part.contentDisposition.parameters['filename'] ?? 'file',
+                filename: part.contentDisposition.parameters['filename'] ?? 'file',
                 data: builder.takeBytes());
             result.files.add(upload);
           } else if (part.isText) {
             var text = await part.join();
-            buildMapFromUri(result.body,
-                '${part.contentDisposition.parameters["name"]}=$text');
+            buildMapFromUri(result.body, '${part.contentDisposition.parameters["name"]}=$text');
           }
         }
       } else if (contentType.mimeType == 'application/json') {
-        result.body
-            .addAll(_foldToStringDynamic(json.decode(await getBody()) as Map));
+        result.body.addAll(_foldToStringDynamic(json.decode(await getBody()) as Map));
       } else if (contentType.mimeType == 'application/x-www-form-urlencoded') {
-        String body = await getBody();
+        var body = await getBody();
         buildMapFromUri(result.body, body);
       } else if (storeOriginalBuffer == true) {
         result.originalBuffer = await getBytes();
@@ -137,15 +122,12 @@ class _BodyParseResultImpl implements BodyParseResult {
   Map<String, dynamic> query = {};
 
   @override
-  var error = null;
+  var error;
 
   @override
-  StackTrace stack = null;
+  StackTrace stack;
 }
 
 Map<String, dynamic> _foldToStringDynamic(Map map) {
-  return map == null
-      ? null
-      : map.keys.fold<Map<String, dynamic>>(
-          <String, dynamic>{}, (out, k) => out..[k.toString()] = map[k]);
+  return map == null ? null : map.keys.fold<Map<String, dynamic>>(<String, dynamic>{}, (out, k) => out..[k.toString()] = map[k]);
 }

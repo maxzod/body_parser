@@ -1,7 +1,8 @@
 name: body_parser
 author: Tobe O <thosakwe@gmail.com>
 version: 1.1.1
-description: Parse request bodies and query strings in Dart. Supports JSON, URL-encoded, and multi-part bodies.
+description: Parse request bodies and query strings in Dart. Supports JSON,
+  URL-encoded, and multi-part bodies.
 homepage: https://github.com/angel-dart/body_parser
 environment:
   sdk: ">=1.8.0 <3.0.0"
@@ -10,6 +11,8 @@ dependencies:
   http_parser: ^4.0.0
   http_server: ^1.0.0
   mime: ^1.0.0
+
 dev_dependencies:
   http: ^0.13.1
   test: ^1.16.8
+  pedantic: ^1.11.0

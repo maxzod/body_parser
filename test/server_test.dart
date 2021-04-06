@@ -26,7 +26,7 @@ String jsonEncodeBody(BodyParseResult result) {
   });
 }
 
-main() {
+void main() async {
   HttpServer server;
   String url;
   http.Client client;
@@ -42,7 +42,7 @@ main() {
     });
     url = 'http://localhost:${server.port}';
     print('Test server listening on $url');
-    client = new http.Client();
+    client = http.Client();
   });
   tearDown(() async {
     await server.close(force: true);
@@ -87,7 +87,7 @@ main() {
   });
 
   group('urlencoded', () {
-    Map<String, String> headers = {'content-type': 'application/x-www-form-urlencoded'};
+    var headers = <String, String>{'content-type': 'application/x-www-form-urlencoded'};
     test('POST Simple', () async {
       print('Body: hello=world');
       var response = await client.post(Uri.parse(url), headers: headers, body: 'hello=world');
@@ -120,7 +120,7 @@ main() {
   });
 
   group('json', () {
-    Map<String, String> headers = {'content-type': 'application/json'};
+    var headers = <String, String>{'content-type': 'application/json'};
     test('Post Simple', () async {
       var postData = json.encode({'hello': 'world'});
       print('Body: $postData');

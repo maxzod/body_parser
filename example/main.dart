@@ -4,24 +4,23 @@ import 'dart:io';
 import 'dart:isolate';
 import 'package:body_parser/body_parser.dart';
 
-main() async {
-  var address = '127.0.0.1';
-  var port = 3000;
-  var futures = <Future>[];
+void main() async {
+  final address = '127.0.0.1';
+  final port = 3000;
+  final futures = <Future>[];
 
-  for (int i = 1; i < Platform.numberOfProcessors; i++) {
+  for (var i = 1; i < Platform.numberOfProcessors; i++) {
     futures.add(Isolate.spawn(start, [address, port, i]));
   }
 
-  Future.wait(futures).then((_) {
-    print('All instances started.');
-    print('Test with "wrk -t12 -c400 -d30s -s ./example/post.lua http://localhost:3000" or similar');
-    start([address, port, 0]);
-  });
+  await Future.wait(futures);
+  print('All instances started.');
+  print('Test with "wrk -t12 -c400 -d30s -s ./example/post.lua http://localhost:3000" or similar');
+  start([address, port, 0]);
 }
 
 void start(List args) {
-  var address = new InternetAddress(args[0] as String);
+  var address = InternetAddress(args[0] as String);
   dynamic port = args[1], id = args[2];
 
   HttpServer.bind(address, port as int, shared: true).then((server) {
@@ -29,9 +28,9 @@ void start(List args) {
       // ignore: deprecated_member_use
       var body = await parseBody(request);
       request.response
-        ..headers.contentType = new ContentType('application', 'json')
-        ..write(json.encode(body.body))
-        ..close();
+        ..headers.contentType = ContentType('application', 'json')
+        ..write(json.encode(body.body));
+      await request.response.close();
     });
 
     print('Server #$id listening at http://${server.address.address}:${server.port}');

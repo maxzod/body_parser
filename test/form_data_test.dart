@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
 import 'server_test.dart';
 
-main() {
+void main() {
   HttpServer server;
   String url;
   http.Client client;
@@ -20,7 +20,7 @@ main() {
     });
     url = 'http://localhost:${server.port}';
     print('Test server listening on $url');
-    client = new http.Client();
+    client = http.Client();
   });
 
   tearDown(() async {
@@ -32,21 +32,21 @@ main() {
   });
 
   test('No upload', () async {
-    String boundary = 'myBoundary';
-    Map<String, String> headers = {'content-type': 'multipart/form-data; boundary=$boundary'};
-    String postData = '''
+    var boundary = 'myBoundary';
+    var headers = <String, String>{'content-type': 'multipart/form-data; boundary=$boundary'};
+    var postData = '''
 --$boundary
 Content-Disposition: form-data; name="hello"
 
 world
 --$boundary--
 '''
-        .replaceAll("\n", "\r\n");
+        .replaceAll('\n', '\r\n');
 
     print('Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
     var response = await client.post(Uri.parse(url), headers: headers, body: postData);
     print('Response: ${response.body}');
-    Map jsons = json.decode(response.body.toString()) as Map;
+    var jsons = json.decode(response.body.toString()) as Map;
     var files = jsons['files'].map((map) {
       return map == null ? null : map.keys.fold<Map<String, dynamic>>(<String, dynamic>{}, (out, k) => out..[k.toString()] = map[k]);
     });
@@ -55,11 +55,11 @@ world
   });
 
   test('Single upload', () async {
-    String boundary = 'myBoundary';
-    Map<String, String> headers = {
-      'content-type': new ContentType("multipart", "form-data", parameters: {"boundary": boundary}).toString()
+    var boundary = 'myBoundary';
+    var headers = <String, String>{
+      'content-type': ContentType('multipart', 'form-data', parameters: {'boundary': boundary}).toString()
     };
-    String postData = '''
+    var postData = '''
 --$boundary
 Content-Disposition: form-data; name="hello"
 
@@ -71,12 +71,12 @@ Content-Type: application/dart
 Hello world
 --$boundary--
 '''
-        .replaceAll("\n", "\r\n");
+        .replaceAll('\n', '\r\n');
 
     print('Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
     var response = await client.post(Uri.parse(url), headers: headers, body: postData);
     print('Response: ${response.body}');
-    Map jsons = json.decode(response.body) as Map;
+    var jsons = json.decode(response.body) as Map;
     var files = jsons['files'];
     expect(files.length, equals(1));
     expect(files[0]['name'], equals('file'));
@@ -87,9 +87,9 @@ Hello world
   });
 
   test('Multiple upload', () async {
-    String boundary = 'myBoundary';
-    Map<String, String> headers = {'content-type': 'multipart/form-data; boundary=$boundary'};
-    String postData = '''
+    var boundary = 'myBoundary';
+    var headers = <String, String>{'content-type': 'multipart/form-data; boundary=$boundary'};
+    var postData = '''
 --$boundary
 Content-Disposition: form-data; name="json"
 
@@ -112,12 +112,12 @@ function main() {
 }
 --$boundary--
 '''
-        .replaceAll("\n", "\r\n");
+        .replaceAll('\n', '\r\n');
 
     print('Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
     var response = await client.post(Uri.parse(url), headers: headers, body: postData);
     print('Response: ${response.body}');
-    Map jsons = json.decode(response.body) as Map;
+    var jsons = json.decode(response.body) as Map;
     var files = jsons['files'];
     expect(files.length, equals(2));
     expect(files[0]['name'], equals('file'));
