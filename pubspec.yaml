@@ -9,7 +9,6 @@ homepage: https://github.com/angel-dart/body_parser
 environment:
   sdk: ">=1.8.0 <3.0.0"
 dependencies:
-  dart2_constant: ^1.0.2+dart2
   http_parser: ^4.0.0
   http_server: ^1.0.0
   mime: ^1.0.0
