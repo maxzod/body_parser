@@ -1,17 +1,7 @@
-# palace_body_parser
-
 # **`PART OF QUEEN PALACE 🏰`**
 
 Parse request bodies and query strings in Dart, as well multipart/form-data uploads. No external
 dependencies required.
-
-### Contents
-
-- [palace_body_parser](#palace_body_parser)
-- [**`PART OF QUEEN PALACE 🏰`**](#part-of-queen-palace-)
-    - [Contents](#contents)
-- [Motivation](#motivation)
-- [Usage](#usage)
 
 # Motivation
 
@@ -20,7 +10,7 @@ we found that `angle` body parser is good enough for us but it was outdated so w
 
 - removed the unused dependence's
 - support null safety
-- use linting
+- fix dart deprecated issues
 
 # Usage
 

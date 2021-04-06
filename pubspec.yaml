@@ -1,8 +1,8 @@
-name: body_parser
+name: palace_body_parser
 version: 2.0.0
 description: Parse request bodies and query strings in Dart. Supports JSON,
   URL-encoded, and multi-part bodies.
-homepage: https://github.com/maxzod/body_parser
+homepage: https://github.com/maxzod/palace_body_parser
 environment:
   sdk: ">=2.12.0 <3.0.0"
 dependencies:
