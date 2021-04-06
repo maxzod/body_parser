@@ -296,13 +296,13 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "body_parser",
+      "name": "palace_body_parser",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2021-04-06T20:02:47.985529Z",
+  "generated": "2021-04-06T20:35:35.820719Z",
   "generator": "pub",
   "generatorVersion": "2.12.2"
 }

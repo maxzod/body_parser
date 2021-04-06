@@ -1,6 +1,6 @@
 import 'dart:io' show HttpRequest, HttpServer;
 
-import 'package:body_parser/body_parser.dart';
+import 'package:palace_body_parser/body_parser.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
