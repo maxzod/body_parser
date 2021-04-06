@@ -15,17 +15,16 @@ main() async {
 
   Future.wait(futures).then((_) {
     print('All instances started.');
-    print(
-        'Test with "wrk -t12 -c400 -d30s -s ./example/post.lua http://localhost:3000" or similar');
+    print('Test with "wrk -t12 -c400 -d30s -s ./example/post.lua http://localhost:3000" or similar');
     start([address, port, 0]);
   });
 }
 
 void start(List args) {
   var address = new InternetAddress(args[0] as String);
-  int port = args[1], id = args[2];
+  dynamic port = args[1], id = args[2];
 
-  HttpServer.bind(address, port, shared: true).then((server) {
+  HttpServer.bind(address, port as int, shared: true).then((server) {
     server.listen((request) async {
       // ignore: deprecated_member_use
       var body = await parseBody(request);
@@ -35,7 +34,6 @@ void start(List args) {
         ..close();
     });
 
-    print(
-        'Server #$id listening at http://${server.address.address}:${server.port}');
+    print('Server #$id listening at http://${server.address.address}:${server.port}');
   });
 }
