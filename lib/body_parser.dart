@@ -4,3 +4,4 @@ library body_parser;
 export 'src/body_parse_result.dart';
 export 'src/file_upload_info.dart';
 export 'src/parse_body.dart';
+export 'package:http_parser/http_parser.dart';
