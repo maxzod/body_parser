@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:palace_body_parser/body_parser.dart';
+import 'package:palace_body_parser/palace_body_parser.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
@@ -16,9 +16,7 @@ void main() {
       //Server will simply return a JSON representation of the parsed body
       request.response.write(jsonEncodeBody(await parseBodyFromStream(
         request,
-        request.headers.contentType != null
-            ? MediaType.parse(request.headers.contentType.toString())
-            : null,
+        request.headers.contentType != null ? MediaType.parse(request.headers.contentType.toString()) : null,
         request.uri,
         storeOriginalBuffer: false,
       )));
@@ -39,9 +37,7 @@ void main() {
 
   test('No upload', () async {
     var boundary = 'myBoundary';
-    var headers = <String, String>{
-      'content-type': 'multipart/form-data; boundary=$boundary'
-    };
+    var headers = <String, String>{'content-type': 'multipart/form-data; boundary=$boundary'};
     var postData = '''
 --$boundary
 Content-Disposition: form-data; name="hello"
@@ -51,17 +47,12 @@ world
 '''
         .replaceAll('\n', '\r\n');
 
-    print(
-        'Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
-    var response =
-        await client!.post(Uri.parse(url!), headers: headers, body: postData);
+    print('Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
+    var response = await client!.post(Uri.parse(url!), headers: headers, body: postData);
     print('Response: ${response.body}');
     var jsons = json.decode(response.body.toString()) as Map;
     var files = jsons['files'].map((map) {
-      return map == null
-          ? null
-          : map.keys.fold<Map<String, dynamic>>(
-              <String, dynamic>{}, (out, k) => out..[k.toString()] = map[k]);
+      return map == null ? null : map.keys.fold<Map<String, dynamic>>(<String, dynamic>{}, (out, k) => out..[k.toString()] = map[k]);
     });
     expect(files.length, equals(0));
     expect(jsons['body']['hello'], equals('world'));
@@ -70,8 +61,7 @@ world
   test('Single upload', () async {
     var boundary = 'myBoundary';
     var headers = <String, String>{
-      'content-type': ContentType('multipart', 'form-data',
-          parameters: {'boundary': boundary}).toString()
+      'content-type': ContentType('multipart', 'form-data', parameters: {'boundary': boundary}).toString()
     };
     var postData = '''
 --$boundary
@@ -87,10 +77,8 @@ Hello world
 '''
         .replaceAll('\n', '\r\n');
 
-    print(
-        'Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
-    var response =
-        await client!.post(Uri.parse(url!), headers: headers, body: postData);
+    print('Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
+    var response = await client!.post(Uri.parse(url!), headers: headers, body: postData);
     print('Response: ${response.body}');
     var jsons = json.decode(response.body) as Map;
     var files = jsons['files'];
@@ -104,9 +92,7 @@ Hello world
 
   test('Multiple upload', () async {
     var boundary = 'myBoundary';
-    var headers = <String, String>{
-      'content-type': 'multipart/form-data; boundary=$boundary'
-    };
+    var headers = <String, String>{'content-type': 'multipart/form-data; boundary=$boundary'};
     var postData = '''
 --$boundary
 Content-Disposition: form-data; name="json"
@@ -132,10 +118,8 @@ function main() {
 '''
         .replaceAll('\n', '\r\n');
 
-    print(
-        'Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
-    var response =
-        await client!.post(Uri.parse(url!), headers: headers, body: postData);
+    print('Form Data: \n${postData.replaceAll("\r", "\\r").replaceAll("\n", "\\n")}');
+    var response = await client!.post(Uri.parse(url!), headers: headers, body: postData);
     print('Response: ${response.body}');
     var jsons = json.decode(response.body) as Map;
     var files = jsons['files'];
