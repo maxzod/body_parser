@@ -1,13 +1,13 @@
 /// Represents a file uploaded to the server.
 class FileUploadInfo {
   /// The MIME type of the uploaded file.
-  String mimeType;
+  String? mimeType;
 
   /// The name of the file field from the request.
-  String name;
+  String? name;
 
   /// The filename of the file.
-  String filename;
+  String? filename;
 
   /// The bytes that make up this file.
   List<int> data;

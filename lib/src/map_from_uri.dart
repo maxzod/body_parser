@@ -13,8 +13,8 @@ void buildMapFromUri(Map map, String body) async {
       var value = Uri.decodeQueryComponent(keyValuePair.substring(equals + 1));
 
       if (parseArrayRgx.hasMatch(key)) {
-        Match queryMatch = parseArrayRgx.firstMatch(key);
-        key = queryMatch.group(1);
+        Match queryMatch = parseArrayRgx.firstMatch(key)!;
+        key = queryMatch.group(1)!;
         if (!(map[key] is List)) {
           map[key] = [];
         }
@@ -24,14 +24,14 @@ void buildMapFromUri(Map map, String body) async {
         // i.e. map.foo.bar => [map, foo, bar]
         var keys = key.split('.');
 
-        var targetMap = map[keys[0]] != null ? map[keys[0]] as Map : {};
+        var targetMap = map[keys[0]] != null ? map[keys[0]] as Map? : {};
         map[keys[0]] = targetMap;
         for (var i = 1; i < keys.length; i++) {
           if (i < keys.length - 1) {
-            targetMap[keys[i]] = targetMap[keys[i]] ?? {};
-            targetMap = targetMap[keys[i]] as Map;
+            targetMap![keys[i]] = targetMap[keys[i]] ?? {};
+            targetMap = targetMap[keys[i]] as Map?;
           } else {
-            targetMap[keys[i]] = getValue(value);
+            targetMap![keys[i]] = getValue(value);
           }
         }
       } else {
