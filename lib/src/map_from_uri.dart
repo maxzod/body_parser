@@ -1,7 +1,7 @@
 import 'get_value.dart';
 
 /// Parses a URI-encoded string into real data! **Wow!**
-///
+/// ture WOW
 /// Whichever map you provide will be automatically populated from the urlencoded body string you provide.
 void buildMapFromUri(Map map, String body) async {
   final parseArrayRgx = RegExp(r'^(.+)\[\]$');

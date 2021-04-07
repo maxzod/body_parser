@@ -13,14 +13,9 @@ import 'map_from_uri.dart';
 
 /// Forwards to [parseBodyFromStream].
 @deprecated
-Future<BodyParseResult> parseBody(HttpRequest request,
-    {bool storeOriginalBuffer = false}) {
+Future<BodyParseResult> parseBody(HttpRequest request, {bool storeOriginalBuffer = false}) {
   return parseBodyFromStream(
-      request,
-      request.headers.contentType != null
-          ? MediaType.parse(request.headers.contentType.toString())
-          : null,
-      request.uri,
+      request, request.headers.contentType != null ? MediaType.parse(request.headers.contentType.toString()) : null, request.uri,
       storeOriginalBuffer: storeOriginalBuffer);
 }
 
@@ -32,8 +27,7 @@ Future<BodyParseResult> parseBody(HttpRequest request,
 /// via the *fileUploadName* parameter. :)
 ///
 /// Use [storeOriginalBuffer] to add  the original request bytes to the result.
-Future<BodyParseResult> parseBodyFromStream(
-    Stream<Uint8List> data, MediaType? contentType, Uri requestUri,
+Future<BodyParseResult> parseBodyFromStream(Stream<Uint8List> data, MediaType? contentType, Uri requestUri,
     {bool storeOriginalBuffer = false}) async {
   var result = _BodyParseResultImpl();
 
@@ -59,8 +53,7 @@ Future<BodyParseResult> parseBodyFromStream(
 
   try {
     if (contentType != null) {
-      if (contentType.type == 'multipart' &&
-          contentType.parameters.containsKey('boundary')) {
+      if (contentType.type == 'multipart' && contentType.parameters.containsKey('boundary')) {
         Stream<Uint8List> stream;
 
         if (storeOriginalBuffer) {
@@ -72,35 +65,26 @@ Future<BodyParseResult> parseBodyFromStream(
           stream = data;
         }
 
-        var parts =
-            MimeMultipartTransformer(contentType.parameters['boundary']!)
-                .bind(stream)
-                .map((part) =>
-                    HttpMultipartFormData.parse(part, defaultEncoding: utf8));
+        var parts = MimeMultipartTransformer(contentType.parameters['boundary']!)
+            .bind(stream)
+            .map((part) => HttpMultipartFormData.parse(part, defaultEncoding: utf8));
 
         await for (HttpMultipartFormData part in parts) {
-          if (part.isBinary ||
-              part.contentDisposition.parameters.containsKey('filename')) {
-            var builder = await part.fold(
-                BytesBuilder(copy: false),
-                (BytesBuilder b, d) =>
-                    b..add(d is! String ? (d as List<int>?)! : d.codeUnits));
+          if (part.isBinary || part.contentDisposition.parameters.containsKey('filename')) {
+            var builder = await part.fold(BytesBuilder(copy: false), (BytesBuilder b, d) => b..add(d is! String ? (d as List<int>?)! : d.codeUnits));
             var upload = FileUploadInfo(
                 mimeType: part.contentType!.mimeType,
                 name: part.contentDisposition.parameters['name'],
-                filename:
-                    part.contentDisposition.parameters['filename'] ?? 'file',
+                filename: part.contentDisposition.parameters['filename'] ?? 'file',
                 data: builder.takeBytes());
             result.files.add(upload);
           } else if (part.isText) {
             var text = await part.join();
-            buildMapFromUri(result.body,
-                '${part.contentDisposition.parameters["name"]}=$text');
+            buildMapFromUri(result.body, '${part.contentDisposition.parameters["name"]}=$text');
           }
         }
       } else if (contentType.mimeType == 'application/json') {
-        result.body.addAll(
-            _foldToStringDynamic(json.decode(await getBody()) as Map?)!);
+        result.body.addAll(_foldToStringDynamic(json.decode(await getBody()) as Map?)!);
       } else if (contentType.mimeType == 'application/x-www-form-urlencoded') {
         var body = await getBody();
         buildMapFromUri(result.body, body);
@@ -126,7 +110,7 @@ Future<BodyParseResult> parseBodyFromStream(
 
 class _BodyParseResultImpl implements BodyParseResult {
   @override
-  Map<String?, dynamic> body = {};
+  Map<String, dynamic> body = {};
 
   @override
   List<FileUploadInfo> files = [];
@@ -135,7 +119,7 @@ class _BodyParseResultImpl implements BodyParseResult {
   List<int>? originalBuffer;
 
   @override
-  Map<String?, dynamic> query = {};
+  Map<String, dynamic> query = {};
 
   @override
   var error;
@@ -145,8 +129,5 @@ class _BodyParseResultImpl implements BodyParseResult {
 }
 
 Map<String, dynamic>? _foldToStringDynamic(Map? map) {
-  return map == null
-      ? null
-      : map.keys.fold<Map<String, dynamic>>(
-          <String, dynamic>{}, (out, k) => out..[k.toString()] = map[k]);
+  return map == null ? null : map.keys.fold<Map<String, dynamic>>(<String, dynamic>{}, (out, k) => out..[k.toString()] = map[k]);
 }

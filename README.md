@@ -17,3 +17,10 @@ we found that `angle` body parser is good enough for us but it was outdated so w
 if you are using `palace` you don't need this package its already shipped with palace and works fine out of the box
 else look for the original repository we just polish the code little bit
 [angel body parser](https://github.com/angel-dart-archive/body_parser)
+
+# TODO
+
+- [x] support null safety
+- [x] remove deprecated issues
+- [ ] replace `http_server`
+- [ ] replace `http_parser`

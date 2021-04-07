@@ -3,10 +3,10 @@ import 'file_upload_info.dart';
 /// A representation of data from an incoming request.
 abstract class BodyParseResult {
   /// The parsed body.
-  Map<String?, dynamic> get body;
+  Map<String, dynamic> get body;
 
   /// The parsed query string.
-  Map<String?, dynamic> get query;
+  Map<String, dynamic> get query;
 
   /// All files uploaded within this request.
   List<FileUploadInfo> get files;
